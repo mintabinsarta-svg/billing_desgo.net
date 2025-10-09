@@ -65,6 +65,7 @@
                 <button onclick="showSection('reports')" class="nav-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 whitespace-nowrap">Laporan</button>
                 <button onclick="showSection('payments')" class="nav-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 whitespace-nowrap">Pembayaran</button>
                 <button onclick="showSection('complaints')" class="nav-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 whitespace-nowrap">Pengaduan</button>
+                <button onclick="showSection('packages')" class="nav-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 whitespace-nowrap">Kelola Paket</button>
             </div>
         </div>
     </nav>
@@ -216,10 +217,8 @@
                         <input type="text" id="customerAddress" placeholder="Alamat" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <select id="customerPackage" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="">Pilih Paket</option>
-                            <option value="Pahe - 7 Mbps - Rp 100000">Pahe - 7 Mbps - Rp 100.000</option>
                             <option value="Basic - 10 Mbps - Rp 150000">Basic - 10 Mbps - Rp 150.000</option>
-                            <option value="Basicplus - 15 Mbps - Rp 175000">Basicplus - 15 Mbps - Rp 175.000</option>
-                            <option value="Standard - 20 Mbps - Rp 200000">Standard - 20 Mbps - Rp 200.000</option>
+                            <option value="Standard - 20 Mbps - Rp 250000">Standard - 20 Mbps - Rp 250.000</option>
                             <option value="Premium - 50 Mbps - Rp 400000">Premium - 50 Mbps - Rp 400.000</option>
                         </select>
                         <input type="date" id="customerStartDate" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -258,10 +257,8 @@
                         <input type="text" id="editCustomerAddress" placeholder="Alamat" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <select id="editCustomerPackage" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="checkPackageChange()">
                             <option value="">Pilih Paket</option>
-                            <option value="Pahe - 7 Mbps - Rp 100000">Pahe - 7 Mbps - Rp 100.000</option>
                             <option value="Basic - 10 Mbps - Rp 150000">Basic - 10 Mbps - Rp 150.000</option>
-                            <option value="Basicplus - 15 Mbps - Rp 175000">Basicplus - 15 Mbps - Rp 175.000</option>
-                            <option value="Standard - 20 Mbps - Rp 200000">Standard - 20 Mbps - Rp 200.000</option>
+                            <option value="Standard - 20 Mbps - Rp 250000">Standard - 20 Mbps - Rp 250.000</option>
                             <option value="Premium - 50 Mbps - Rp 400000">Premium - 50 Mbps - Rp 400.000</option>
                         </select>
                         <input type="date" id="editCustomerStartDate" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -459,7 +456,7 @@
                             <h3 class="font-bold text-yellow-800">Bank Mandiri</h3>
                         </div>
                         <p class="text-yellow-700 text-sm mb-2">Transfer ke rekening:</p>
-                        <p class="font-mono text-sm font-bold text-yellow-800">1330032102022</p>
+                        <p class="font-mono text-sm font-bold text-yellow-800">1234567890</p>
                         <p class="text-yellow-700 text-xs">a.n. BUMDes CMMS Cikahuripan</p>
                     </div>
                     
@@ -473,7 +470,7 @@
                             <h3 class="font-bold text-red-800">Bank BJB</h3>
                         </div>
                         <p class="text-red-700 text-sm mb-2">Transfer ke rekening:</p>
-                        <p class="font-mono text-sm font-bold text-red-800">0120735101100</p>
+                        <p class="font-mono text-sm font-bold text-red-800">0987654321</p>
                         <p class="text-red-700 text-xs">a.n. BUMDes CMMS Cikahuripan</p>
                     </div>
                     
@@ -501,7 +498,7 @@
                             <h3 class="font-bold text-cyan-800">DANA BUMDes</h3>
                         </div>
                         <p class="text-cyan-700 text-sm mb-2">Transfer ke DANA:</p>
-                        <p class="font-mono text-sm font-bold text-cyan-800">082112505438</p>
+                        <p class="font-mono text-sm font-bold text-cyan-800">082125415593</p>
                         <p class="text-cyan-700 text-xs">a.n. BUMDes CMMS Cikahuripan</p>
                     </div>
                 </div>
@@ -552,6 +549,130 @@
                                 </li>
                             </ol>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Package Management Section -->
+        <div id="packages" class="section hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">Kelola Paket Internet</h2>
+                    <button onclick="showAddPackageForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium">
+                        + Tambah Paket
+                    </button>
+                </div>
+
+                <!-- Add Package Form -->
+                <div id="addPackageForm" class="hidden mb-6 p-4 bg-gray-50 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-4">Tambah Paket Baru</h3>
+                    <form onsubmit="addPackage(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input type="text" id="packageName" placeholder="Nama Paket (contoh: Basic)" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <input type="text" id="packageSpeed" placeholder="Kecepatan (contoh: 10 Mbps)" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <input type="number" id="packagePrice" placeholder="Harga (tanpa Rp)" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <div class="md:col-span-3">
+                            <textarea id="packageDescription" placeholder="Deskripsi paket (opsional)" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                        </div>
+                        <div class="md:col-span-3 flex space-x-2">
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">💾 Simpan Paket</button>
+                            <button type="button" onclick="hideAddPackageForm()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium">Batal</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Edit Package Form -->
+                <div id="editPackageForm" class="hidden mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h3 class="text-lg font-semibold mb-4 text-blue-800">Edit Paket Internet</h3>
+                    <div id="packageEditWarning" class="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-yellow-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <h4 class="font-medium text-yellow-800">Perhatian!</h4>
+                                <p class="text-sm text-yellow-700 mt-1">
+                                    Perubahan paket akan mempengaruhi <span id="affectedCustomersCount" class="font-semibold">0</span> pelanggan yang menggunakan paket ini.
+                                </p>
+                                <p class="text-xs text-yellow-600 mt-2">
+                                    ⚠️ Tagihan bulan depan akan menggunakan harga baru<br>
+                                    📱 Pelanggan akan mendapat notifikasi perubahan paket
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <form onsubmit="updatePackage(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input type="hidden" id="editPackageId">
+                        <input type="text" id="editPackageName" placeholder="Nama Paket" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <input type="text" id="editPackageSpeed" placeholder="Kecepatan" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <input type="number" id="editPackagePrice" placeholder="Harga" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <div class="md:col-span-3">
+                            <textarea id="editPackageDescription" placeholder="Deskripsi paket" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                        </div>
+                        <div class="md:col-span-3 flex space-x-2">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium">💾 Update Paket</button>
+                            <button type="button" onclick="hideEditPackageForm()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium">Batal</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Package List -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Nama Paket</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Kecepatan</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Harga</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Pelanggan</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Status</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="packageList" class="divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Package Statistics -->
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-bold text-blue-800">Total Paket</h3>
+                        </div>
+                        <p class="text-3xl font-bold text-blue-900" id="totalPackages">0</p>
+                        <p class="text-blue-700 text-sm">Paket tersedia</p>
+                    </div>
+                    
+                    <div class="p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-bold text-green-800">Paket Terpopuler</h3>
+                        </div>
+                        <p class="text-lg font-bold text-green-900" id="popularPackage">-</p>
+                        <p class="text-green-700 text-sm" id="popularPackageCount">0 pelanggan</p>
+                    </div>
+                    
+                    <div class="p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border border-purple-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-bold text-purple-800">Rata-rata Harga</h3>
+                        </div>
+                        <p class="text-lg font-bold text-purple-900" id="averagePrice">Rp 0</p>
+                        <p class="text-purple-700 text-sm">Per bulan</p>
                     </div>
                 </div>
             </div>
@@ -678,7 +799,7 @@
                             </div>
                             <div>
                                 <p class="font-medium text-gray-800">DANA BUMDes</p>
-                                <p class="text-sm text-gray-600">082112505438</p>
+                                <p class="text-sm text-gray-600">082125415593</p>
                             </div>
                         </div>
                     </button>
@@ -705,16 +826,20 @@
         let bills = JSON.parse(localStorage.getItem('bills') || '[]');
         let complaints = JSON.parse(localStorage.getItem('complaints') || '[]');
         let payments = JSON.parse(localStorage.getItem('payments') || '[]');
+        let packages = JSON.parse(localStorage.getItem('packages') || '[]');
         let currentCustomerFilter = 'all';
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             updateCurrentDate();
+            initializeDefaultPackages();
             updateDashboard();
             renderCustomers();
             renderBills();
             renderComplaints();
             renderRecentPayments();
+            renderPackages();
+            updatePackageDropdowns();
             initCharts();
             
             // Set today's date as default for payment input
@@ -755,6 +880,382 @@
             if (sectionName === 'reports') {
                 setTimeout(updateReportsCharts, 100);
             }
+            
+            // Update package statistics if packages section
+            if (sectionName === 'packages') {
+                updatePackageStatistics();
+            }
+        }
+
+        function initializeDefaultPackages() {
+            if (packages.length === 0) {
+                packages = [
+                    {
+                        id: 'PKG001',
+                        name: 'Basic',
+                        speed: '10 Mbps',
+                        price: 150000,
+                        description: 'Paket dasar untuk kebutuhan internet ringan',
+                        status: 'Aktif',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 'PKG002',
+                        name: 'Standard',
+                        speed: '20 Mbps',
+                        price: 250000,
+                        description: 'Paket standar untuk kebutuhan internet sehari-hari',
+                        status: 'Aktif',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 'PKG003',
+                        name: 'Premium',
+                        speed: '50 Mbps',
+                        price: 400000,
+                        description: 'Paket premium untuk kebutuhan internet berat',
+                        status: 'Aktif',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('packages', JSON.stringify(packages));
+            }
+        }
+
+        function showAddPackageForm() {
+            document.getElementById('addPackageForm').classList.remove('hidden');
+            hideEditPackageForm();
+        }
+
+        function hideAddPackageForm() {
+            document.getElementById('addPackageForm').classList.add('hidden');
+            document.getElementById('addPackageForm').querySelector('form').reset();
+        }
+
+        function showEditPackageForm(packageId) {
+            const pkg = packages.find(p => p.id === packageId);
+            if (!pkg) return;
+            
+            // Hide other forms
+            hideAddPackageForm();
+            
+            // Count affected customers
+            const affectedCustomers = customers.filter(c => {
+                const customerPackage = c.package.split(' - ')[0];
+                return customerPackage === pkg.name;
+            }).length;
+            
+            // Populate form
+            document.getElementById('editPackageId').value = pkg.id;
+            document.getElementById('editPackageName').value = pkg.name;
+            document.getElementById('editPackageSpeed').value = pkg.speed;
+            document.getElementById('editPackagePrice').value = pkg.price;
+            document.getElementById('editPackageDescription').value = pkg.description || '';
+            document.getElementById('affectedCustomersCount').textContent = affectedCustomers;
+            
+            // Show form
+            document.getElementById('editPackageForm').classList.remove('hidden');
+        }
+
+        function hideEditPackageForm() {
+            document.getElementById('editPackageForm').classList.add('hidden');
+            document.getElementById('editPackageForm').querySelector('form').reset();
+        }
+
+        function addPackage(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('packageName').value;
+            const speed = document.getElementById('packageSpeed').value;
+            const price = parseInt(document.getElementById('packagePrice').value);
+            const description = document.getElementById('packageDescription').value;
+            
+            // Check if package name already exists
+            const existingPackage = packages.find(p => p.name.toLowerCase() === name.toLowerCase());
+            if (existingPackage) {
+                alert('Nama paket sudah ada! Gunakan nama yang berbeda.');
+                return;
+            }
+            
+            const newPackage = {
+                id: 'PKG' + String(packages.length + 1).padStart(3, '0'),
+                name: name,
+                speed: speed,
+                price: price,
+                description: description,
+                status: 'Aktif',
+                createdAt: new Date().toISOString()
+            };
+            
+            packages.push(newPackage);
+            localStorage.setItem('packages', JSON.stringify(packages));
+            
+            hideAddPackageForm();
+            renderPackages();
+            updatePackageDropdowns();
+            updatePackageStatistics();
+            
+            alert(`✅ Paket "${name}" berhasil ditambahkan!`);
+        }
+
+        function updatePackage(event) {
+            event.preventDefault();
+            
+            const packageId = document.getElementById('editPackageId').value;
+            const pkg = packages.find(p => p.id === packageId);
+            
+            if (!pkg) {
+                alert('Paket tidak ditemukan!');
+                return;
+            }
+            
+            const oldName = pkg.name;
+            const oldPrice = pkg.price;
+            const oldSpeed = pkg.speed;
+            
+            // Update package data
+            const updatedData = {
+                name: document.getElementById('editPackageName').value,
+                speed: document.getElementById('editPackageSpeed').value,
+                price: parseInt(document.getElementById('editPackagePrice').value),
+                description: document.getElementById('editPackageDescription').value,
+                updatedAt: new Date().toISOString(),
+                updatedBy: 'Admin'
+            };
+            
+            // Check if name changed and conflicts with existing
+            if (updatedData.name !== oldName) {
+                const existingPackage = packages.find(p => p.name.toLowerCase() === updatedData.name.toLowerCase() && p.id !== packageId);
+                if (existingPackage) {
+                    alert('Nama paket sudah ada! Gunakan nama yang berbeda.');
+                    return;
+                }
+            }
+            
+            // Update package
+            Object.assign(pkg, updatedData);
+            
+            // Update all customers using this package
+            const affectedCustomers = customers.filter(c => {
+                const customerPackage = c.package.split(' - ')[0];
+                return customerPackage === oldName;
+            });
+            
+            if (affectedCustomers.length > 0) {
+                const newPackageString = `${updatedData.name} - ${updatedData.speed} - Rp ${updatedData.price}`;
+                
+                affectedCustomers.forEach(customer => {
+                    const oldPackageString = customer.package;
+                    customer.package = newPackageString;
+                    
+                    // Add package change history
+                    if (!customer.packageHistory) {
+                        customer.packageHistory = [];
+                    }
+                    
+                    customer.packageHistory.push({
+                        oldPackage: oldPackageString,
+                        newPackage: newPackageString,
+                        changedAt: new Date().toISOString(),
+                        changedBy: 'Admin (Package Update)',
+                        reason: 'Package modification'
+                    });
+                    
+                    // Send notification to customer
+                    sendPackageUpdateNotification(customer, oldName, updatedData);
+                });
+                
+                // Update bills with new package info
+                bills.forEach(bill => {
+                    affectedCustomers.forEach(customer => {
+                        if (bill.customerId === customer.id) {
+                            bill.package = newPackageString;
+                            // Update future bills amount
+                            if (bill.status === 'Belum Bayar') {
+                                bill.amount = updatedData.price;
+                            }
+                        }
+                    });
+                });
+                
+                localStorage.setItem('customers', JSON.stringify(customers));
+                localStorage.setItem('bills', JSON.stringify(bills));
+            }
+            
+            localStorage.setItem('packages', JSON.stringify(packages));
+            
+            hideEditPackageForm();
+            renderPackages();
+            renderCustomers();
+            renderBills();
+            updatePackageDropdowns();
+            updatePackageStatistics();
+            
+            let message = `✅ Paket "${updatedData.name}" berhasil diupdate!`;
+            if (affectedCustomers.length > 0) {
+                message += `\n\n📊 ${affectedCustomers.length} pelanggan terpengaruh`;
+                message += `\n📱 Notifikasi telah dikirim ke semua pelanggan`;
+                message += `\n💰 Tagihan yang belum dibayar telah diupdate`;
+            }
+            
+            alert(message);
+        }
+
+        function sendPackageUpdateNotification(customer, oldPackageName, newPackageData) {
+            const message = `Halo ${customer.name}, paket internet "${oldPackageName}" telah diperbarui menjadi "${newPackageData.name}" dengan kecepatan ${newPackageData.speed} dan harga ${formatCurrency(newPackageData.price)}. Perubahan berlaku untuk tagihan bulan depan. Terima kasih. - BUMDes CMMS Cikahuripan`;
+            
+            console.log(`WhatsApp package update notification sent to ${customer.phone}: ${message}`);
+        }
+
+        function togglePackageStatus(packageId) {
+            const pkg = packages.find(p => p.id === packageId);
+            if (!pkg) return;
+            
+            const newStatus = pkg.status === 'Aktif' ? 'Nonaktif' : 'Aktif';
+            const action = newStatus === 'Aktif' ? 'mengaktifkan' : 'menonaktifkan';
+            
+            // Check if package is being used by customers
+            const customersUsingPackage = customers.filter(c => {
+                const customerPackage = c.package.split(' - ')[0];
+                return customerPackage === pkg.name && c.status === 'Aktif';
+            });
+            
+            let message = `Apakah Anda yakin ingin ${action} paket "${pkg.name}"?\n\n`;
+            
+            if (newStatus === 'Nonaktif' && customersUsingPackage.length > 0) {
+                message += `⚠️ PERHATIAN:\n`;
+                message += `• ${customersUsingPackage.length} pelanggan aktif menggunakan paket ini\n`;
+                message += `• Paket tidak akan tersedia untuk pelanggan baru\n`;
+                message += `• Pelanggan existing tetap menggunakan paket ini\n`;
+                message += `• Anda perlu memindahkan pelanggan ke paket lain secara manual`;
+            } else if (newStatus === 'Aktif') {
+                message += `✅ Paket akan diaktifkan kembali:\n`;
+                message += `• Tersedia untuk pelanggan baru\n`;
+                message += `• Dapat dipilih saat menambah/edit pelanggan`;
+            }
+            
+            if (confirm(message)) {
+                pkg.status = newStatus;
+                pkg.statusChangedAt = new Date().toISOString();
+                pkg.statusChangedBy = 'Admin';
+                
+                localStorage.setItem('packages', JSON.stringify(packages));
+                renderPackages();
+                updatePackageDropdowns();
+                updatePackageStatistics();
+                
+                alert(`✅ Status paket "${pkg.name}" berhasil ${newStatus === 'Aktif' ? 'diaktifkan' : 'dinonaktifkan'}!`);
+            }
+        }
+
+        function renderPackages() {
+            const tbody = document.getElementById('packageList');
+            tbody.innerHTML = '';
+            
+            if (packages.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                        Belum ada paket internet yang tersedia
+                    </td>
+                `;
+                tbody.appendChild(row);
+                return;
+            }
+            
+            packages.forEach(pkg => {
+                // Count customers using this package
+                const customersCount = customers.filter(c => {
+                    const customerPackage = c.package.split(' - ')[0];
+                    return customerPackage === pkg.name;
+                }).length;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-3 font-medium">${pkg.name}</td>
+                    <td class="px-4 py-3">${pkg.speed}</td>
+                    <td class="px-4 py-3 font-semibold">${formatCurrency(pkg.price)}</td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                            ${customersCount} pelanggan
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-1 text-xs rounded-full ${pkg.status === 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${pkg.status}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <button onclick="showEditPackageForm('${pkg.id}')" class="px-3 py-1 text-xs rounded-lg font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 mr-2">
+                            ✏️ Edit
+                        </button>
+                        <button onclick="togglePackageStatus('${pkg.id}')" class="px-3 py-1 text-xs rounded-lg font-medium ${pkg.status === 'Aktif' ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200'}">
+                            ${pkg.status === 'Aktif' ? '🔴 Nonaktifkan' : '🟢 Aktifkan'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updatePackageDropdowns() {
+            // Update customer form dropdowns
+            const customerPackageSelect = document.getElementById('customerPackage');
+            const editCustomerPackageSelect = document.getElementById('editCustomerPackage');
+            
+            [customerPackageSelect, editCustomerPackageSelect].forEach(select => {
+                if (select) {
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">Pilih Paket</option>';
+                    
+                    packages.filter(p => p.status === 'Aktif').forEach(pkg => {
+                        const option = document.createElement('option');
+                        option.value = `${pkg.name} - ${pkg.speed} - Rp ${pkg.price}`;
+                        option.textContent = `${pkg.name} - ${pkg.speed} - ${formatCurrency(pkg.price)}`;
+                        select.appendChild(option);
+                    });
+                    
+                    // Restore previous value if it still exists
+                    if (currentValue) {
+                        select.value = currentValue;
+                    }
+                }
+            });
+        }
+
+        function updatePackageStatistics() {
+            const totalPackagesElement = document.getElementById('totalPackages');
+            const popularPackageElement = document.getElementById('popularPackage');
+            const popularPackageCountElement = document.getElementById('popularPackageCount');
+            const averagePriceElement = document.getElementById('averagePrice');
+            
+            if (!totalPackagesElement) return; // Not on packages page
+            
+            // Total packages
+            const activePackages = packages.filter(p => p.status === 'Aktif');
+            totalPackagesElement.textContent = activePackages.length;
+            
+            // Most popular package
+            const packageUsage = {};
+            customers.forEach(customer => {
+                const packageName = customer.package.split(' - ')[0];
+                packageUsage[packageName] = (packageUsage[packageName] || 0) + 1;
+            });
+            
+            let mostPopular = { name: '-', count: 0 };
+            Object.entries(packageUsage).forEach(([name, count]) => {
+                if (count > mostPopular.count) {
+                    mostPopular = { name, count };
+                }
+            });
+            
+            popularPackageElement.textContent = mostPopular.name;
+            popularPackageCountElement.textContent = `${mostPopular.count} pelanggan`;
+            
+            // Average price
+            const totalPrice = activePackages.reduce((sum, pkg) => sum + pkg.price, 0);
+            const avgPrice = activePackages.length > 0 ? totalPrice / activePackages.length : 0;
+            averagePriceElement.textContent = formatCurrency(avgPrice);
         }
 
         function showAddCustomerForm() {
@@ -1286,14 +1787,10 @@
             const type = packageType.toLowerCase().trim();
             
             switch (type) {
-                case 'Pahe':
-                    return 'Pahe - 7 Mbps - Rp 100000';
                 case 'basic':
                     return 'Basic - 10 Mbps - Rp 150000';
-                case 'basicplus':
-                    return 'Basicplus - 15 Mbps - Rp 175000';
                 case 'standard':
-                    return 'Standard - 20 Mbps - Rp 200000';
+                    return 'Standard - 20 Mbps - Rp 250000';
                 case 'premium':
                     return 'Premium - 50 Mbps - Rp 400000';
                 default:
@@ -1884,7 +2381,7 @@
                     phone: '081234567890',
                     email: 'budi@email.com',
                     address: 'Jl. Merdeka No. 123',
-                    package: 'Standard - 20 Mbps - Rp 200000',
+                    package: 'Standard - 20 Mbps - Rp 250000',
                     startDate: '2024-01-01',
                     status: 'Aktif',
                     createdAt: new Date().toISOString()
@@ -1908,7 +2405,5 @@
             updateDashboard();
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98bdff0e31fc4ad6',t:'MTc2MDAxNDE0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98beef2860654ad6',t:'MTc2MDAyMzk4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
-
