@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bumdes CMMS Cikahuripan - Sistem Tagihan Internet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .print-area {
+            display: none;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-area, .print-area * {
+                visibility: visible;
+            }
+            .print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 58mm;
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-full">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-blue-600">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Bumdes CMMS Cikahuripan</h1>
+                        <p class="text-sm text-gray-600">Sistem Tagihan Internet</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">Admin: <span class="font-semibold">Operator</span></p>
+                    <p class="text-xs text-gray-500" id="currentDate"></p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="container mx-auto px-4">
+            <div class="flex space-x-1 overflow-x-auto">
+                <button onclick="showSection('dashboard')" class="nav-btn px-4 py-3 text-sm font-medium text-blue-600 border-b-2 border-blue-600 whitespace-nowrap">Dashboard</button>
+                <button onclick="showSection('customers')" class="nav-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 whitespace-nowrap">Data Pelanggan</button>
+                <button onclick="showSection('billing')" class="nav-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 whitespace-nowrap">Tagihan</button>
+                <button onclick="showSection('reports')" class="nav-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 whitespace-nowrap">Laporan</button>
+                <button onclick="showSection('payments')" class="nav-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 whitespace-nowrap">Pembayaran</button>
+                <button onclick="showSection('complaints')" class="nav-btn px-4 py-3 text-sm font-medium text-gray-600 hover:text-blue-600 whitespace-nowrap">Pengaduan</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Pelanggan</p>
+                            <p class="text-3xl font-bold text-gray-900" id="totalCustomers">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Pendapatan Bulan Ini</p>
+                            <p class="text-3xl font-bold text-gray-900" id="monthlyRevenue">Rp 0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Tagihan Tertunda</p>
+                            <p class="text-3xl font-bold text-gray-900" id="pendingBills">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Pengaduan Aktif</p>
+                            <p class="text-3xl font-bold text-gray-900" id="activeComplaints">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Grafik Pendapatan 6 Bulan Terakhir</h3>
+                <canvas id="revenueChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Customers Section -->
+        <div id="customers" class="section hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">Data Pelanggan</h2>
+                    <div class="flex space-x-2">
+                        <button onclick="showImportForm()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">
+                            📊 Import Excel
+                        </button>
+                        <button onclick="downloadTemplate()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium">
+                            📥 Template
+                        </button>
+                        <button onclick="showAddCustomerForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium">
+                            + Tambah Pelanggan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Customer Status Filter -->
+                <div class="mb-6 flex flex-wrap items-center gap-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm font-medium text-gray-700">Filter Status:</span>
+                        <div class="flex bg-gray-100 rounded-lg p-1">
+                            <button onclick="filterCustomers('all')" id="filterAll" class="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white">
+                                Semua
+                            </button>
+                            <button onclick="filterCustomers('active')" id="filterActive" class="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:text-blue-600">
+                                Aktif
+                            </button>
+                            <button onclick="filterCustomers('inactive')" id="filterInactive" class="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:text-blue-600">
+                                Tidak Aktif
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-gray-600">Total:</span>
+                        <span id="customerCount" class="text-sm font-semibold text-blue-600">0 pelanggan</span>
+                    </div>
+                </div>
+
+                <!-- Import Excel Form -->
+                <div id="importForm" class="hidden mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+                    <h3 class="text-lg font-semibold mb-4 text-green-800">Import Data Pelanggan dari Excel</h3>
+                    <div class="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <h4 class="font-medium text-blue-800 mb-2">Format Excel yang Diperlukan:</h4>
+                        <p class="text-sm text-blue-700 mb-2">File Excel harus memiliki kolom dengan urutan berikut:</p>
+                        <div class="text-xs text-blue-600 font-mono bg-white p-2 rounded border">
+                            A: Nama Lengkap | B: Nomor HP/WA | C: Email | D: Alamat | E: Paket | F: Tanggal Mulai
+                        </div>
+                        <p class="text-xs text-blue-600 mt-2">
+                            <strong>Paket:</strong> Basic, Standard, atau Premium<br>
+                            <strong>Tanggal:</strong> Format YYYY-MM-DD (contoh: 2025-01-15)
+                        </p>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Pilih File Excel (.xlsx, .xls)</label>
+                        <input type="file" id="excelFile" accept=".xlsx,.xls" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="importFromExcel()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">
+                            📊 Import Data
+                        </button>
+                        <button onclick="hideImportForm()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium">
+                            Batal
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add Customer Form -->
+                <div id="addCustomerForm" class="hidden mb-6 p-4 bg-gray-50 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-4">Tambah Pelanggan Baru</h3>
+                    <form onsubmit="addCustomer(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="customerName" placeholder="Nama Lengkap" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <input type="text" id="customerPhone" placeholder="Nomor HP/WA" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <input type="email" id="customerEmail" placeholder="Email" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <input type="text" id="customerAddress" placeholder="Alamat" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <select id="customerPackage" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Pilih Paket</option>
+                            <option value="Pahe - 7 Mbps - Rp 100000">Pahe - 7 Mbps - Rp 100.000</option>
+                            <option value="Basic - 10 Mbps - Rp 150000">Basic - 10 Mbps - Rp 150.000</option>
+                            <option value="Basicplus - 15 Mbps - Rp 175000">Basicplus - 15 Mbps - Rp 175.000</option>
+                            <option value="Standard - 20 Mbps - Rp 200000">Standard - 20 Mbps - Rp 200.000</option>
+                            <option value="Premium - 50 Mbps - Rp 400000">Premium - 50 Mbps - Rp 400.000</option>
+                        </select>
+                        <input type="date" id="customerStartDate" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <div class="md:col-span-2 flex space-x-2">
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">Simpan</button>
+                            <button type="button" onclick="hideAddCustomerForm()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium">Batal</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Edit Customer Form -->
+                <div id="editCustomerForm" class="hidden mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h3 class="text-lg font-semibold mb-4 text-blue-800">Edit Data Pelanggan</h3>
+                    <div id="packageChangeWarning" class="hidden mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-yellow-600 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <h4 class="font-medium text-yellow-800">Perubahan Paket Terdeteksi!</h4>
+                                <p class="text-sm text-yellow-700 mt-1">
+                                    Paket akan berubah dari <span id="oldPackageInfo" class="font-semibold"></span> ke <span id="newPackageInfo" class="font-semibold"></span>
+                                </p>
+                                <p class="text-xs text-yellow-600 mt-2">
+                                    ⚠️ Tagihan bulan depan akan menggunakan paket baru<br>
+                                    📱 Pelanggan akan mendapat notifikasi perubahan paket
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <form onsubmit="updateCustomer(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="hidden" id="editCustomerId">
+                        <input type="text" id="editCustomerName" placeholder="Nama Lengkap" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <input type="text" id="editCustomerPhone" placeholder="Nomor HP/WA" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <input type="email" id="editCustomerEmail" placeholder="Email" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <input type="text" id="editCustomerAddress" placeholder="Alamat" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <select id="editCustomerPackage" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="checkPackageChange()">
+                            <option value="">Pilih Paket</option>
+                            <option value="Pahe - 7 Mbps - Rp 100000">Pahe - 7 Mbps - Rp 100.000</option>
+                            <option value="Basic - 10 Mbps - Rp 150000">Basic - 10 Mbps - Rp 150.000</option>
+                            <option value="Basicplus - 15 Mbps - Rp 175000">Basicplus - 15 Mbps - Rp 175.000</option>
+                            <option value="Standard - 20 Mbps - Rp 250000">Standard - 20 Mbps - Rp 250.000</option>
+                            <option value="Premium - 50 Mbps - Rp 400000">Premium - 50 Mbps - Rp 400.000</option>
+                        </select>
+                        <input type="date" id="editCustomerStartDate" required class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <div class="md:col-span-2 flex space-x-2">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium">💾 Update</button>
+                            <button type="button" onclick="hideEditCustomerForm()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium">Batal</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Customer List -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">ID</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Nama</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">HP/WA</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Paket</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Status</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerList" class="divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Billing Section -->
+        <div id="billing" class="section hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">Tagihan Bulanan</h2>
+                    <button onclick="generateMonthlyBills()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium">
+                        Generate Tagihan Bulan Ini
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">ID Tagihan</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Pelanggan</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Periode</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Jumlah</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Status</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billingList" class="divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports" class="section hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Laporan Pendapatan</h3>
+                    <canvas id="monthlyChart" width="400" height="300"></canvas>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Status Pembayaran</h3>
+                    <canvas id="paymentChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 mt-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Ringkasan Laporan</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 bg-blue-50 rounded-lg">
+                        <p class="text-sm text-blue-600 font-medium">Total Pendapatan Tahun Ini</p>
+                        <p class="text-2xl font-bold text-blue-800" id="yearlyRevenue">Rp 0</p>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <p class="text-sm text-green-600 font-medium">Rata-rata Pendapatan/Bulan</p>
+                        <p class="text-2xl font-bold text-green-800" id="avgMonthlyRevenue">Rp 0</p>
+                    </div>
+                    <div class="p-4 bg-purple-50 rounded-lg">
+                        <p class="text-sm text-purple-600 font-medium">Tingkat Pembayaran</p>
+                        <p class="text-2xl font-bold text-purple-800" id="paymentRate">0%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments Section -->
+        <div id="payments" class="section hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">Metode Pembayaran</h2>
+                    <button onclick="showPaymentInputForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium">
+                        💰 Input Pembayaran
+                    </button>
+                </div>
+
+                <!-- Payment Input Form -->
+                <div id="paymentInputForm" class="hidden mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h3 class="text-lg font-semibold mb-4 text-blue-800">Input Pembayaran Manual</h3>
+                    <form onsubmit="processManualPayment(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Pelanggan</label>
+                            <select id="paymentCustomer" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="loadCustomerBills()">
+                                <option value="">-- Pilih Pelanggan --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Tagihan</label>
+                            <select id="paymentBill" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="updatePaymentAmount()">
+                                <option value="">-- Pilih Tagihan --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah Pembayaran</label>
+                            <input type="text" id="paymentAmount" readonly class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Metode Pembayaran</label>
+                            <select id="paymentMethodSelect" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">-- Pilih Metode --</option>
+                                <option value="Tunai">Tunai</option>
+                                <option value="Bank Mandiri">Bank Mandiri</option>
+                                <option value="Bank BJB">Bank BJB</option>
+                                <option value="Bank BRI">Bank BRI</option>
+                                <option value="DANA BUMDes">DANA BUMDes</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Pembayaran</label>
+                            <input type="date" id="paymentDate" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan (Opsional)</label>
+                            <input type="text" id="paymentNote" placeholder="Catatan tambahan..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div class="md:col-span-2 flex space-x-2">
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">
+                                💰 Proses Pembayaran
+                            </button>
+                            <button type="button" onclick="hidePaymentInputForm()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium">
+                                Batal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Recent Payments -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Pembayaran Terbaru</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-700">ID Pembayaran</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-700">Pelanggan</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-700">Periode</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-700">Jumlah</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-700">Metode</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-700">Tanggal</th>
+                                    <th class="px-4 py-3 text-left font-medium text-gray-700">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentPaymentsList" class="divide-y divide-gray-200">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Payment Methods Info -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-bold text-blue-800">Tunai</h3>
+                        </div>
+                        <p class="text-blue-700 text-sm">Bayar langsung di kantor BUMDes atau melalui petugas</p>
+                    </div>
+                    
+                    <div class="p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl border border-yellow-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-yellow-600 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-bold text-yellow-800">Bank Mandiri</h3>
+                        </div>
+                        <p class="text-yellow-700 text-sm mb-2">Transfer ke rekening:</p>
+                        <p class="font-mono text-sm font-bold text-yellow-800">1330032102022</p>
+                        <p class="text-yellow-700 text-xs">a.n. BUMDes CMMS Cikahuripan</p>
+                    </div>
+                    
+                    <div class="p-6 bg-gradient-to-br from-red-50 to-red-100 rounded-xl border border-red-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-bold text-red-800">Bank BJB</h3>
+                        </div>
+                        <p class="text-red-700 text-sm mb-2">Transfer ke rekening:</p>
+                        <p class="font-mono text-sm font-bold text-red-800">0120735101100</p>
+                        <p class="text-red-700 text-xs">a.n. BUMDes CMMS Cikahuripan</p>
+                    </div>
+                    
+                    <div class="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-blue-700 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-bold text-blue-800">Bank BRI</h3>
+                        </div>
+                        <p class="text-blue-700 text-sm mb-2">Transfer ke rekening:</p>
+                        <p class="font-mono text-sm font-bold text-blue-800">5678901234</p>
+                        <p class="text-blue-700 text-xs">a.n. BUMDes CMMS Cikahuripan</p>
+                    </div>
+                    
+                    <div class="p-6 bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-xl border border-cyan-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-cyan-600 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                </svg>
+                            </div>
+                            <h3 class="font-bold text-cyan-800">DANA BUMDes</h3>
+                        </div>
+                        <p class="text-cyan-700 text-sm mb-2">Transfer ke DANA:</p>
+                        <p class="font-mono text-sm font-bold text-cyan-800">082112505438</p>
+                        <p class="text-cyan-700 text-xs">a.n. BUMDes CMMS Cikahuripan</p>
+                    </div>
+                </div>
+
+                <!-- Payment Processing -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Proses Pembayaran</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-medium text-gray-700 mb-3">Untuk Transfer Bank & E-Wallet:</h4>
+                            <ol class="text-sm text-gray-600 space-y-2">
+                                <li class="flex items-start">
+                                    <span class="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5">1</span>
+                                    Transfer sesuai jumlah tagihan
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5">2</span>
+                                    Screenshot bukti transfer
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5">3</span>
+                                    Kirim ke WhatsApp: <strong>082125415593</strong>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5">4</span>
+                                    Tunggu konfirmasi dari admin
+                                </li>
+                            </ol>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-700 mb-3">Untuk Pembayaran Tunai:</h4>
+                            <ol class="text-sm text-gray-600 space-y-2">
+                                <li class="flex items-start">
+                                    <span class="bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5">1</span>
+                                    Datang ke kantor BUMDes
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5">2</span>
+                                    Sebutkan nama & ID pelanggan
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5">3</span>
+                                    Bayar sesuai jumlah tagihan
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 mt-0.5">4</span>
+                                    Terima struk pembayaran
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complaints Section -->
+        <div id="complaints" class="section hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Pengaduan Pelanggan</h2>
+                
+                <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+                    <h3 class="font-semibold text-blue-800 mb-2">Informasi Pengaduan</h3>
+                    <p class="text-blue-700 text-sm mb-2">Pelanggan dapat mengirim pengaduan melalui WhatsApp ke nomor:</p>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold text-blue-800">082125415593</span>
+                        <a href="https://wa.me/6282125415593?text=Halo%20Admin%20Bumdes%20CMMS%20Cikahuripan,%20saya%20ingin%20melaporkan%20gangguan%20internet." 
+                           target="_blank" rel="noopener noreferrer"
+                           class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-medium">
+                            Buka WhatsApp
+                        </a>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">ID</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Pelanggan</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Jenis Gangguan</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Tanggal</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Status</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="complaintsList" class="divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-800">Pilih Metode Pembayaran</h3>
+                    <button onclick="closePaymentModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div id="paymentBillInfo" class="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <!-- Bill info will be populated here -->
+                </div>
+                
+                <div class="space-y-3">
+                    <button onclick="processPayment('Tunai')" class="w-full p-4 text-left border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-800">Tunai</p>
+                                <p class="text-sm text-gray-600">Bayar langsung di kantor</p>
+                            </div>
+                        </div>
+                    </button>
+                    
+                    <button onclick="processPayment('Bank Mandiri')" class="w-full p-4 text-left border border-gray-200 rounded-lg hover:bg-yellow-50 hover:border-yellow-300 transition-colors">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-yellow-600 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-800">Bank Mandiri</p>
+                                <p class="text-sm text-gray-600">1234567890</p>
+                            </div>
+                        </div>
+                    </button>
+                    
+                    <button onclick="processPayment('Bank BJB')" class="w-full p-4 text-left border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-300 transition-colors">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-800">Bank BJB</p>
+                                <p class="text-sm text-gray-600">0987654321</p>
+                            </div>
+                        </div>
+                    </button>
+                    
+                    <button onclick="processPayment('Bank BRI')" class="w-full p-4 text-left border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-700 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-800">Bank BRI</p>
+                                <p class="text-sm text-gray-600">5678901234</p>
+                            </div>
+                        </div>
+                    </button>
+                    
+                    <button onclick="processPayment('DANA BUMDes')" class="w-full p-4 text-left border border-gray-200 rounded-lg hover:bg-cyan-50 hover:border-cyan-300 transition-colors">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-cyan-600 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-800">DANA BUMDes</p>
+                                <p class="text-sm text-gray-600">082125415593</p>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Receipt Area -->
+    <div class="print-area" id="printArea">
+        <div style="text-align: center; margin-bottom: 10px;">
+            <strong>BUMDES CMMS CIKAHURIPAN</strong><br>
+            <small>Bukti Pembayaran Internet</small>
+        </div>
+        <div id="receiptContent"></div>
+        <div style="text-align: center; margin-top: 10px;">
+            <small>Terima kasih atas pembayaran Anda</small>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let customers = JSON.parse(localStorage.getItem('customers') || '[]');
+        let bills = JSON.parse(localStorage.getItem('bills') || '[]');
+        let complaints = JSON.parse(localStorage.getItem('complaints') || '[]');
+        let payments = JSON.parse(localStorage.getItem('payments') || '[]');
+        let currentCustomerFilter = 'all';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentDate();
+            updateDashboard();
+            renderCustomers();
+            renderBills();
+            renderComplaints();
+            renderRecentPayments();
+            initCharts();
+            
+            // Set today's date as default for payment input
+            document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
+            
+            // Start fresh for 2025 - no sample data
+        });
+
+        function updateCurrentDate() {
+            const now = new Date();
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName).classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+                btn.classList.add('text-gray-600');
+            });
+            
+            event.target.classList.remove('text-gray-600');
+            event.target.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+            
+            // Update charts if reports section
+            if (sectionName === 'reports') {
+                setTimeout(updateReportsCharts, 100);
+            }
+        }
+
+        function showAddCustomerForm() {
+            document.getElementById('addCustomerForm').classList.remove('hidden');
+        }
+
+        function hideAddCustomerForm() {
+            document.getElementById('addCustomerForm').classList.add('hidden');
+            document.getElementById('addCustomerForm').querySelector('form').reset();
+        }
+
+        function showEditCustomerForm(customerId) {
+            const customer = customers.find(c => c.id === customerId);
+            if (!customer) return;
+            
+            // Hide other forms
+            hideAddCustomerForm();
+            hideImportForm();
+            
+            // Populate form with customer data
+            document.getElementById('editCustomerId').value = customer.id;
+            document.getElementById('editCustomerName').value = customer.name;
+            document.getElementById('editCustomerPhone').value = customer.phone;
+            document.getElementById('editCustomerEmail').value = customer.email || '';
+            document.getElementById('editCustomerAddress').value = customer.address;
+            document.getElementById('editCustomerPackage').value = customer.package;
+            document.getElementById('editCustomerStartDate').value = customer.startDate;
+            
+            // Store original package for comparison
+            document.getElementById('editCustomerPackage').setAttribute('data-original', customer.package);
+            
+            // Hide package change warning initially
+            document.getElementById('packageChangeWarning').classList.add('hidden');
+            
+            // Show form
+            document.getElementById('editCustomerForm').classList.remove('hidden');
+        }
+
+        function hideEditCustomerForm() {
+            document.getElementById('editCustomerForm').classList.add('hidden');
+            document.getElementById('editCustomerForm').querySelector('form').reset();
+            document.getElementById('packageChangeWarning').classList.add('hidden');
+        }
+
+        function checkPackageChange() {
+            const packageSelect = document.getElementById('editCustomerPackage');
+            const originalPackage = packageSelect.getAttribute('data-original');
+            const newPackage = packageSelect.value;
+            const warningDiv = document.getElementById('packageChangeWarning');
+            
+            if (originalPackage && newPackage && originalPackage !== newPackage) {
+                // Show warning
+                const oldPackageInfo = originalPackage.split(' - ');
+                const newPackageInfo = newPackage.split(' - ');
+                
+                document.getElementById('oldPackageInfo').textContent = `${oldPackageInfo[0]} (${oldPackageInfo[2]})`;
+                document.getElementById('newPackageInfo').textContent = `${newPackageInfo[0]} (${newPackageInfo[2]})`;
+                
+                warningDiv.classList.remove('hidden');
+            } else {
+                warningDiv.classList.add('hidden');
+            }
+        }
+
+        function updateCustomer(event) {
+            event.preventDefault();
+            
+            const customerId = document.getElementById('editCustomerId').value;
+            const customer = customers.find(c => c.id === customerId);
+            
+            if (!customer) {
+                alert('Pelanggan tidak ditemukan!');
+                return;
+            }
+            
+            // Store original data for comparison
+            const originalPackage = customer.package;
+            const originalName = customer.name;
+            const originalPhone = customer.phone;
+            
+            // Update customer data
+            const updatedData = {
+                name: document.getElementById('editCustomerName').value,
+                phone: document.getElementById('editCustomerPhone').value,
+                email: document.getElementById('editCustomerEmail').value,
+                address: document.getElementById('editCustomerAddress').value,
+                package: document.getElementById('editCustomerPackage').value,
+                startDate: document.getElementById('editCustomerStartDate').value,
+                updatedAt: new Date().toISOString(),
+                updatedBy: 'Admin'
+            };
+            
+            // Check for package change
+            const packageChanged = originalPackage !== updatedData.package;
+            
+            // Update customer object
+            Object.assign(customer, updatedData);
+            
+            // If package changed, add package change history
+            if (packageChanged) {
+                if (!customer.packageHistory) {
+                    customer.packageHistory = [];
+                }
+                
+                customer.packageHistory.push({
+                    oldPackage: originalPackage,
+                    newPackage: updatedData.package,
+                    changedAt: new Date().toISOString(),
+                    changedBy: 'Admin'
+                });
+                
+                // Send package change notification
+                sendPackageChangeNotification(customer, originalPackage, updatedData.package);
+            }
+            
+            // Check if phone number changed and update bills
+            if (originalPhone !== updatedData.phone) {
+                bills.forEach(bill => {
+                    if (bill.customerId === customerId) {
+                        bill.customerPhone = updatedData.phone;
+                    }
+                });
+                localStorage.setItem('bills', JSON.stringify(bills));
+            }
+            
+            // Check if name changed and update bills
+            if (originalName !== updatedData.name) {
+                bills.forEach(bill => {
+                    if (bill.customerId === customerId) {
+                        bill.customerName = updatedData.name;
+                    }
+                });
+                localStorage.setItem('bills', JSON.stringify(bills));
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('customers', JSON.stringify(customers));
+            
+            // Update UI
+            hideEditCustomerForm();
+            renderCustomers();
+            renderBills();
+            updateDashboard();
+            
+            // Show success message
+            let message = `✅ Data pelanggan "${customer.name}" berhasil diupdate!`;
+            if (packageChanged) {
+                const oldPkg = originalPackage.split(' - ')[0];
+                const newPkg = updatedData.package.split(' - ')[0];
+                message += `\n\n📦 Paket berubah: ${oldPkg} → ${newPkg}`;
+                message += `\n📱 Notifikasi telah dikirim ke pelanggan`;
+                message += `\n💰 Tagihan bulan depan akan menggunakan paket baru`;
+            }
+            
+            alert(message);
+        }
+
+        function sendPackageChangeNotification(customer, oldPackage, newPackage) {
+            const oldPkgInfo = oldPackage.split(' - ');
+            const newPkgInfo = newPackage.split(' - ');
+            
+            const message = `Halo ${customer.name}, paket internet Anda telah diubah dari ${oldPkgInfo[0]} (${oldPkgInfo[1]}, ${oldPkgInfo[2]}) menjadi ${newPkgInfo[0]} (${newPkgInfo[1]}, ${newPkgInfo[2]}). Perubahan akan berlaku pada tagihan bulan depan. Terima kasih. - BUMDes CMMS Cikahuripan`;
+            
+            console.log(`WhatsApp package change notification sent to ${customer.phone}: ${message}`);
+            
+            // Log for admin
+            const adminLog = `[PACKAGE CHANGED] Pelanggan: ${customer.name} (${customer.id}) - Paket: ${oldPkgInfo[0]} → ${newPkgInfo[0]} - Waktu: ${new Date().toLocaleString('id-ID')}`;
+            console.log(`Admin log: ${adminLog}`);
+        }
+
+        function showImportForm() {
+            document.getElementById('importForm').classList.remove('hidden');
+            hideAddCustomerForm();
+        }
+
+        function hideImportForm() {
+            document.getElementById('importForm').classList.add('hidden');
+            document.getElementById('excelFile').value = '';
+        }
+
+        function showPaymentInputForm() {
+            document.getElementById('paymentInputForm').classList.remove('hidden');
+            loadCustomersForPayment();
+        }
+
+        function hidePaymentInputForm() {
+            document.getElementById('paymentInputForm').classList.add('hidden');
+            document.getElementById('paymentInputForm').querySelector('form').reset();
+            document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        function loadCustomersForPayment() {
+            const select = document.getElementById('paymentCustomer');
+            select.innerHTML = '<option value="">-- Pilih Pelanggan --</option>';
+            
+            customers.filter(c => c.status === 'Aktif').forEach(customer => {
+                const option = document.createElement('option');
+                option.value = customer.id;
+                option.textContent = `${customer.name} (${customer.id})`;
+                select.appendChild(option);
+            });
+        }
+
+        function loadCustomerBills() {
+            const customerId = document.getElementById('paymentCustomer').value;
+            const billSelect = document.getElementById('paymentBill');
+            const amountInput = document.getElementById('paymentAmount');
+            
+            billSelect.innerHTML = '<option value="">-- Pilih Tagihan --</option>';
+            amountInput.value = '';
+            
+            if (customerId) {
+                const customerBills = bills.filter(b => b.customerId === customerId && b.status === 'Belum Bayar');
+                
+                if (customerBills.length === 0) {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'Tidak ada tagihan yang belum dibayar';
+                    option.disabled = true;
+                    billSelect.appendChild(option);
+                } else {
+                    customerBills.forEach(bill => {
+                        const option = document.createElement('option');
+                        option.value = bill.id;
+                        option.textContent = `${bill.period} - ${formatCurrency(bill.amount)}`;
+                        billSelect.appendChild(option);
+                    });
+                }
+            }
+        }
+
+        function updatePaymentAmount() {
+            const billId = document.getElementById('paymentBill').value;
+            const amountInput = document.getElementById('paymentAmount');
+            
+            if (billId) {
+                const bill = bills.find(b => b.id === billId);
+                if (bill) {
+                    amountInput.value = formatCurrency(bill.amount);
+                }
+            } else {
+                amountInput.value = '';
+            }
+        }
+
+        function processManualPayment(event) {
+            event.preventDefault();
+            
+            const customerId = document.getElementById('paymentCustomer').value;
+            const billId = document.getElementById('paymentBill').value;
+            const paymentMethod = document.getElementById('paymentMethodSelect').value;
+            const paymentDate = document.getElementById('paymentDate').value;
+            const paymentNote = document.getElementById('paymentNote').value;
+            
+            const bill = bills.find(b => b.id === billId);
+            const customer = customers.find(c => c.id === customerId);
+            
+            if (bill && customer) {
+                // Update bill status
+                bill.status = 'Lunas';
+                bill.paidAt = new Date(paymentDate).toISOString();
+                bill.paymentMethod = paymentMethod;
+                bill.paymentNote = paymentNote;
+                
+                // Add to payments record
+                const payment = {
+                    id: 'PAY' + String(payments.length + 1).padStart(6, '0'),
+                    billId: bill.id,
+                    customerId: bill.customerId,
+                    customerName: bill.customerName,
+                    amount: bill.amount,
+                    period: bill.period,
+                    paymentMethod: paymentMethod,
+                    paymentNote: paymentNote,
+                    paidAt: new Date(paymentDate).toISOString(),
+                    inputBy: 'Admin',
+                    inputAt: new Date().toISOString()
+                };
+                
+                payments.push(payment);
+                
+                localStorage.setItem('bills', JSON.stringify(bills));
+                localStorage.setItem('payments', JSON.stringify(payments));
+                
+                hidePaymentInputForm();
+                renderBills();
+                renderRecentPayments();
+                updateDashboard();
+                
+                // Send payment confirmation
+                sendPaymentConfirmation(bill, paymentMethod);
+                
+                alert(`Pembayaran ${customer.name} periode ${bill.period} sebesar ${formatCurrency(bill.amount)} berhasil diinput!`);
+                
+                // Auto print receipt
+                printReceipt(billId);
+            }
+        }
+
+        function renderRecentPayments() {
+            const tbody = document.getElementById('recentPaymentsList');
+            tbody.innerHTML = '';
+            
+            // Get recent payments (last 10)
+            const recentPayments = payments
+                .sort((a, b) => new Date(b.paidAt) - new Date(a.paidAt))
+                .slice(0, 10);
+            
+            if (recentPayments.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                        Belum ada pembayaran yang tercatat
+                    </td>
+                `;
+                tbody.appendChild(row);
+                return;
+            }
+            
+            recentPayments.forEach(payment => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-3 font-medium">${payment.id}</td>
+                    <td class="px-4 py-3">${payment.customerName}</td>
+                    <td class="px-4 py-3">${payment.period}</td>
+                    <td class="px-4 py-3 font-semibold">${formatCurrency(payment.amount)}</td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                            ${payment.paymentMethod}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">${new Date(payment.paidAt).toLocaleDateString('id-ID')}</td>
+                    <td class="px-4 py-3">
+                        <button onclick="printReceipt('${payment.billId}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs mr-2">
+                            Cetak
+                        </button>
+                        <button onclick="sendWhatsApp('${getCustomerPhone(payment.customerId)}', '${payment.customerName}', '${payment.billId}')" class="text-green-600 hover:text-green-800">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                            </svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function getCustomerPhone(customerId) {
+            const customer = customers.find(c => c.id === customerId);
+            return customer ? customer.phone : '';
+        }
+
+        function downloadTemplate() {
+            // Create sample data for template
+            const templateData = [
+                ['Nama Lengkap', 'Nomor HP/WA', 'Email', 'Alamat', 'Paket', 'Tanggal Mulai'],
+                ['Contoh: Budi Santoso', '081234567890', 'budi@email.com', 'Jl. Merdeka No. 123', 'Basic', '2025-01-15'],
+                ['Contoh: Siti Aminah', '081234567891', 'siti@email.com', 'Jl. Sudirman No. 456', 'Standard', '2025-01-15'],
+                ['', '', '', '', 'Premium', '']
+            ];
+
+            // Create workbook and worksheet
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(templateData);
+
+            // Set column widths
+            ws['!cols'] = [
+                { width: 20 }, // Nama
+                { width: 15 }, // HP
+                { width: 25 }, // Email
+                { width: 30 }, // Alamat
+                { width: 12 }, // Paket
+                { width: 15 }  // Tanggal
+            ];
+
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Template Pelanggan');
+
+            // Download file
+            XLSX.writeFile(wb, 'Template_Data_Pelanggan_BUMDes.xlsx');
+        }
+
+        function importFromExcel() {
+            const fileInput = document.getElementById('excelFile');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Silakan pilih file Excel terlebih dahulu!');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    // Get first worksheet
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // Convert to JSON
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    if (jsonData.length < 2) {
+                        alert('File Excel kosong atau tidak memiliki data!');
+                        return;
+                    }
+
+                    // Skip header row and process data
+                    const importedCustomers = [];
+                    let successCount = 0;
+                    let errorCount = 0;
+                    const errors = [];
+
+                    for (let i = 1; i < jsonData.length; i++) {
+                        const row = jsonData[i];
+                        
+                        // Skip empty rows
+                        if (!row[0] || row[0].toString().trim() === '') continue;
+
+                        try {
+                            const name = row[0]?.toString().trim();
+                            const phone = row[1]?.toString().trim();
+                            const email = row[2]?.toString().trim() || '';
+                            const address = row[3]?.toString().trim();
+                            const packageType = row[4]?.toString().trim();
+                            const startDate = row[5] ? formatExcelDate(row[5]) : new Date().toISOString().split('T')[0];
+
+                            // Validate required fields
+                            if (!name || !phone || !address || !packageType) {
+                                errors.push(`Baris ${i + 1}: Data tidak lengkap`);
+                                errorCount++;
+                                continue;
+                            }
+
+                            // Validate and format package
+                            const formattedPackage = formatPackage(packageType);
+                            if (!formattedPackage) {
+                                errors.push(`Baris ${i + 1}: Paket "${packageType}" tidak valid. Gunakan: Basic, Standard, atau Premium`);
+                                errorCount++;
+                                continue;
+                            }
+
+                            // Check if customer already exists
+                            const existingCustomer = customers.find(c => c.phone === phone);
+                            if (existingCustomer) {
+                                errors.push(`Baris ${i + 1}: Pelanggan dengan HP ${phone} sudah ada`);
+                                errorCount++;
+                                continue;
+                            }
+
+                            const customer = {
+                                id: 'CUST' + String(customers.length + importedCustomers.length + 1).padStart(4, '0'),
+                                name: name,
+                                phone: phone,
+                                email: email,
+                                address: address,
+                                package: formattedPackage,
+                                startDate: startDate,
+                                status: 'Aktif',
+                                createdAt: new Date().toISOString()
+                            };
+
+                            importedCustomers.push(customer);
+                            successCount++;
+
+                        } catch (error) {
+                            errors.push(`Baris ${i + 1}: ${error.message}`);
+                            errorCount++;
+                        }
+                    }
+
+                    // Add imported customers to main array
+                    customers.push(...importedCustomers);
+                    localStorage.setItem('customers', JSON.stringify(customers));
+
+                    // Show results
+                    let message = `Import selesai!\n\n`;
+                    message += `✅ Berhasil: ${successCount} pelanggan\n`;
+                    if (errorCount > 0) {
+                        message += `❌ Gagal: ${errorCount} baris\n\n`;
+                        if (errors.length > 0) {
+                            message += `Detail error:\n${errors.slice(0, 5).join('\n')}`;
+                            if (errors.length > 5) {
+                                message += `\n... dan ${errors.length - 5} error lainnya`;
+                            }
+                        }
+                    }
+
+                    alert(message);
+
+                    if (successCount > 0) {
+                        hideImportForm();
+                        renderCustomers();
+                        updateDashboard();
+                    }
+
+                } catch (error) {
+                    alert('Error membaca file Excel: ' + error.message);
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        function formatExcelDate(excelDate) {
+            if (typeof excelDate === 'string') {
+                // If already in YYYY-MM-DD format
+                if (/^\d{4}-\d{2}-\d{2}$/.test(excelDate)) {
+                    return excelDate;
+                }
+                // Try to parse other date formats
+                const date = new Date(excelDate);
+                if (!isNaN(date.getTime())) {
+                    return date.toISOString().split('T')[0];
+                }
+            } else if (typeof excelDate === 'number') {
+                // Excel date serial number
+                const date = new Date((excelDate - 25569) * 86400 * 1000);
+                return date.toISOString().split('T')[0];
+            }
+            
+            // Default to today if can't parse
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function formatPackage(packageType) {
+            const type = packageType.toLowerCase().trim();
+            
+            switch (type) {
+                case 'Pahe':
+                    return 'Pahe - 7 Mbps - Rp 100000';
+                case 'basic':
+                    return 'Basic - 10 Mbps - Rp 150000';
+                case 'basicplus':
+                    return 'Basicplus - 15 Mbps - Rp 175000';
+                case 'standard':
+                    return 'Standard - 20 Mbps - Rp 200000';
+                case 'premium':
+                    return 'Premium - 50 Mbps - Rp 400000';
+                default:
+                    return null;
+            }
+        }
+
+        function addCustomer(event) {
+            event.preventDefault();
+            
+            const customer = {
+                id: 'CUST' + String(customers.length + 1).padStart(4, '0'),
+                name: document.getElementById('customerName').value,
+                phone: document.getElementById('customerPhone').value,
+                email: document.getElementById('customerEmail').value,
+                address: document.getElementById('customerAddress').value,
+                package: document.getElementById('customerPackage').value,
+                startDate: document.getElementById('customerStartDate').value,
+                status: 'Aktif',
+                createdAt: new Date().toISOString()
+            };
+            
+            customers.push(customer);
+            localStorage.setItem('customers', JSON.stringify(customers));
+            
+            hideAddCustomerForm();
+            renderCustomers();
+            updateDashboard();
+            
+            alert('Pelanggan berhasil ditambahkan!');
+        }
+
+        function filterCustomers(filter) {
+            currentCustomerFilter = filter;
+            
+            // Update button styles
+            document.querySelectorAll('[id^="filter"]').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('text-gray-600', 'hover:text-blue-600');
+            });
+            
+            const activeBtn = document.getElementById(`filter${filter.charAt(0).toUpperCase() + filter.slice(1)}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-600', 'hover:text-blue-600');
+                activeBtn.classList.add('bg-blue-600', 'text-white');
+            }
+            
+            renderCustomers();
+        }
+
+        function getFilteredCustomers() {
+            switch (currentCustomerFilter) {
+                case 'active':
+                    return customers.filter(c => c.status === 'Aktif');
+                case 'inactive':
+                    return customers.filter(c => c.status === 'Nonaktif');
+                default:
+                    return customers;
+            }
+        }
+
+        function updateCustomerCount() {
+            const filteredCustomers = getFilteredCustomers();
+            const countElement = document.getElementById('customerCount');
+            
+            let statusText = '';
+            switch (currentCustomerFilter) {
+                case 'active':
+                    statusText = 'aktif';
+                    break;
+                case 'inactive':
+                    statusText = 'tidak aktif';
+                    break;
+                default:
+                    statusText = '';
+            }
+            
+            countElement.textContent = `${filteredCustomers.length} pelanggan ${statusText}`.trim();
+        }
+
+        function renderCustomers() {
+            const tbody = document.getElementById('customerList');
+            tbody.innerHTML = '';
+            
+            const filteredCustomers = getFilteredCustomers();
+            updateCustomerCount();
+            
+            if (filteredCustomers.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                        ${currentCustomerFilter === 'active' ? 'Tidak ada pelanggan aktif' : 
+                          currentCustomerFilter === 'inactive' ? 'Tidak ada pelanggan tidak aktif' : 
+                          'Belum ada data pelanggan'}
+                    </td>
+                `;
+                tbody.appendChild(row);
+                return;
+            }
+            
+            filteredCustomers.forEach(customer => {
+                const packageInfo = customer.package.split(' - ');
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-3 font-medium">${customer.id}</td>
+                    <td class="px-4 py-3">${customer.name}</td>
+                    <td class="px-4 py-3">${customer.phone}</td>
+                    <td class="px-4 py-3">${packageInfo[0]} - ${packageInfo[1]}</td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-1 text-xs rounded-full ${customer.status === 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${customer.status}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <button onclick="sendWhatsApp('${customer.phone}', '${customer.name}')" class="text-green-600 hover:text-green-800 mr-2" title="Kirim WhatsApp">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                            </svg>
+                        </button>
+                        <button onclick="showEditCustomerForm('${customer.id}')" class="px-3 py-1 text-xs rounded-lg font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 mr-2">
+                            ✏️ Edit
+                        </button>
+                        <button onclick="confirmStatusChange('${customer.id}', '${customer.status}')" class="px-3 py-1 text-xs rounded-lg font-medium ${customer.status === 'Aktif' ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200'}">
+                            ${customer.status === 'Aktif' ? '🔴 Nonaktifkan' : '🟢 Aktifkan'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function confirmStatusChange(customerId, currentStatus) {
+            const customer = customers.find(c => c.id === customerId);
+            if (!customer) return;
+            
+            const newStatus = currentStatus === 'Aktif' ? 'Nonaktif' : 'Aktif';
+            const action = newStatus === 'Aktif' ? 'mengaktifkan' : 'menonaktifkan';
+            
+            let message = `Apakah Anda yakin ingin ${action} pelanggan "${customer.name}"?\n\n`;
+            
+            if (newStatus === 'Nonaktif') {
+                message += `⚠️ PERHATIAN:\n`;
+                message += `• Pelanggan akan berhenti berlangganan\n`;
+                message += `• Tagihan yang belum dibayar tetap berlaku\n`;
+                message += `• Layanan internet akan dihentikan\n`;
+                message += `• Status dapat diaktifkan kembali jika diperlukan`;
+            } else {
+                message += `✅ Pelanggan akan diaktifkan kembali:\n`;
+                message += `• Layanan internet akan dipulihkan\n`;
+                message += `• Tagihan bulanan akan dibuat kembali\n`;
+                message += `• Status berlangganan menjadi aktif`;
+            }
+            
+            if (confirm(message)) {
+                toggleCustomerStatus(customerId, newStatus);
+            }
+        }
+
+        function toggleCustomerStatus(customerId, newStatus) {
+            const customer = customers.find(c => c.id === customerId);
+            if (customer) {
+                const oldStatus = customer.status;
+                customer.status = newStatus;
+                customer.statusChangedAt = new Date().toISOString();
+                customer.statusChangedBy = 'Admin';
+                
+                localStorage.setItem('customers', JSON.stringify(customers));
+                renderCustomers();
+                updateDashboard();
+                
+                // Send notification to customer
+                sendStatusChangeNotification(customer, oldStatus, newStatus);
+                
+                const action = newStatus === 'Aktif' ? 'diaktifkan' : 'dinonaktifkan';
+                alert(`✅ Status pelanggan "${customer.name}" berhasil ${action}!`);
+            }
+        }
+
+        function sendStatusChangeNotification(customer, oldStatus, newStatus) {
+            let message = `Halo ${customer.name}, `;
+            
+            if (newStatus === 'Nonaktif') {
+                message += `status berlangganan internet Anda telah dinonaktifkan. Layanan internet akan dihentikan. Jika ada tagihan yang belum dibayar, mohon segera diselesaikan. Terima kasih atas kepercayaan Anda. - BUMDes CMMS Cikahuripan`;
+            } else {
+                message += `selamat! Status berlangganan internet Anda telah diaktifkan kembali. Layanan internet akan segera dipulihkan. Tagihan bulanan akan kembali dibuat sesuai jadwal. Terima kasih. - BUMDes CMMS Cikahuripan`;
+            }
+            
+            console.log(`WhatsApp notification sent to ${customer.phone}: ${message}`);
+            
+            // Log status change for admin
+            const adminLog = `[STATUS CHANGED] Pelanggan: ${customer.name} (${customer.id}) - Status: ${oldStatus} → ${newStatus} - Waktu: ${new Date().toLocaleString('id-ID')}`;
+            console.log(`Admin log: ${adminLog}`);
+        }
+
+        function generateMonthlyBills() {
+            const currentDate = new Date();
+            const currentMonth = currentDate.getMonth();
+            const currentYear = currentDate.getFullYear();
+            
+            const activeCustomers = customers.filter(c => c.status === 'Aktif');
+            let generatedCount = 0;
+            let skippedCount = 0;
+            
+            activeCustomers.forEach(customer => {
+                const packageInfo = customer.package.split(' - ');
+                const amount = parseInt(packageInfo[2].replace('Rp ', '').replace('.', ''));
+                
+                const existingBill = bills.find(b => 
+                    b.customerId === customer.id && 
+                    b.month === currentMonth && 
+                    b.year === currentYear
+                );
+                
+                if (!existingBill) {
+                    const bill = {
+                        id: 'BILL' + String(bills.length + 1).padStart(6, '0'),
+                        customerId: customer.id,
+                        customerName: customer.name,
+                        customerPhone: customer.phone,
+                        customerEmail: customer.email,
+                        package: customer.package,
+                        amount: amount,
+                        month: currentMonth,
+                        year: currentYear,
+                        period: `${currentDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}`,
+                        status: 'Belum Bayar',
+                        dueDate: new Date(currentYear, currentMonth + 1, 10).toISOString(),
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    bills.push(bill);
+                    generatedCount++;
+                    
+                    // Send notification (simulated)
+                    sendBillNotification(customer, bill);
+                } else {
+                    skippedCount++;
+                }
+            });
+            
+            localStorage.setItem('bills', JSON.stringify(bills));
+            renderBills();
+            updateDashboard();
+            
+            let message = `📋 Generate Tagihan Selesai!\n\n`;
+            message += `✅ Dibuat: ${generatedCount} tagihan baru\n`;
+            if (skippedCount > 0) {
+                message += `⏭️ Dilewati: ${skippedCount} tagihan (sudah ada)\n`;
+            }
+            message += `👥 Total pelanggan aktif: ${activeCustomers.length}\n`;
+            message += `📅 Periode: ${currentDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}`;
+            
+            alert(message);
+        }
+
+        function sendBillNotification(customer, bill) {
+            // Simulate WhatsApp notification
+            const message = `Halo ${customer.name}, tagihan internet Anda untuk periode ${bill.period} sebesar ${formatCurrency(bill.amount)} sudah tersedia. Mohon segera lakukan pembayaran sebelum tanggal ${new Date(bill.dueDate).toLocaleDateString('id-ID')}. Terima kasih.`;
+            
+            console.log(`WhatsApp notification sent to ${customer.phone}: ${message}`);
+            
+            // Simulate email notification if email exists
+            if (customer.email) {
+                console.log(`Email notification sent to ${customer.email}`);
+            }
+        }
+
+        function renderBills() {
+            const tbody = document.getElementById('billingList');
+            tbody.innerHTML = '';
+            
+            bills.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(bill => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-3 font-medium">${bill.id}</td>
+                    <td class="px-4 py-3">${bill.customerName}</td>
+                    <td class="px-4 py-3">${bill.period}</td>
+                    <td class="px-4 py-3 font-semibold">${formatCurrency(bill.amount)}</td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-1 text-xs rounded-full ${bill.status === 'Lunas' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                            ${bill.status}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        ${bill.status === 'Belum Bayar' ? 
+                            `<button onclick="showPaymentModal('${bill.id}')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs mr-2">Bayar</button>` : 
+                            `<button onclick="printReceipt('${bill.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs mr-2">Cetak</button>`
+                        }
+                        <button onclick="sendWhatsApp('${bill.customerPhone}', '${bill.customerName}', '${bill.id}')" class="text-green-600 hover:text-green-800">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                            </svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        let currentBillId = null;
+
+        function showPaymentModal(billId) {
+            currentBillId = billId;
+            const bill = bills.find(b => b.id === billId);
+            if (bill) {
+                document.getElementById('paymentBillInfo').innerHTML = `
+                    <h4 class="font-semibold text-gray-800 mb-2">Detail Tagihan</h4>
+                    <p class="text-sm text-gray-600">ID: ${bill.id}</p>
+                    <p class="text-sm text-gray-600">Pelanggan: ${bill.customerName}</p>
+                    <p class="text-sm text-gray-600">Periode: ${bill.period}</p>
+                    <p class="text-lg font-bold text-gray-800">Total: ${formatCurrency(bill.amount)}</p>
+                `;
+                document.getElementById('paymentModal').classList.remove('hidden');
+            }
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+            currentBillId = null;
+        }
+
+        function processPayment(paymentMethod) {
+            if (!currentBillId) return;
+            
+            const bill = bills.find(b => b.id === currentBillId);
+            if (bill) {
+                bill.status = 'Lunas';
+                bill.paidAt = new Date().toISOString();
+                bill.paymentMethod = paymentMethod;
+                
+                // Add to payments record
+                const payment = {
+                    id: 'PAY' + String(payments.length + 1).padStart(6, '0'),
+                    billId: bill.id,
+                    customerId: bill.customerId,
+                    customerName: bill.customerName,
+                    amount: bill.amount,
+                    period: bill.period,
+                    paymentMethod: paymentMethod,
+                    paidAt: new Date().toISOString()
+                };
+                
+                payments.push(payment);
+                
+                localStorage.setItem('bills', JSON.stringify(bills));
+                localStorage.setItem('payments', JSON.stringify(payments));
+                
+                closePaymentModal();
+                renderBills();
+                updateDashboard();
+                
+                // Send payment confirmation to customer and admin
+                sendPaymentConfirmation(bill, paymentMethod);
+                
+                alert(`Pembayaran melalui ${paymentMethod} berhasil dicatat!`);
+                
+                // Auto print receipt
+                printReceipt(currentBillId);
+            }
+        }
+
+        function sendPaymentConfirmation(bill, paymentMethod) {
+            // Send confirmation to customer
+            const customerMessage = `Terima kasih ${bill.customerName}! Pembayaran tagihan internet periode ${bill.period} sebesar ${formatCurrency(bill.amount)} melalui ${paymentMethod} telah kami terima. Status: LUNAS. - BUMDes CMMS Cikahuripan`;
+            
+            console.log(`WhatsApp confirmation sent to customer ${bill.customerPhone}: ${customerMessage}`);
+            
+            // Send notification to admin
+            const adminMessage = `[PEMBAYARAN DITERIMA] Pelanggan: ${bill.customerName} (${bill.customerId}) telah membayar tagihan ${bill.period} sebesar ${formatCurrency(bill.amount)} melalui ${paymentMethod}. ID Tagihan: ${bill.id}`;
+            
+            console.log(`WhatsApp notification sent to admin 082125415593: ${adminMessage}`);
+            
+            // Simulate sending WhatsApp to customer
+            setTimeout(() => {
+                const whatsappUrl = `https://wa.me/62${bill.customerPhone.replace(/^0/, '')}?text=${encodeURIComponent(customerMessage)}`;
+                // Auto-open would be: window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+            }, 1000);
+        }
+
+        function markAsPaid(billId) {
+            // This function is now replaced by showPaymentModal
+            showPaymentModal(billId);
+        }
+
+        function printReceipt(billId) {
+            const bill = bills.find(b => b.id === billId);
+            if (bill) {
+                const receiptContent = `
+                    <div style="margin-bottom: 5px;">
+                        <strong>No: ${bill.id}</strong><br>
+                        Tanggal: ${new Date(bill.paidAt || bill.createdAt).toLocaleDateString('id-ID')}
+                    </div>
+                    <div style="border-top: 1px dashed #000; padding-top: 5px; margin-bottom: 5px;">
+                        Pelanggan: ${bill.customerName}<br>
+                        Paket: ${bill.package.split(' - ')[0]}<br>
+                        Periode: ${bill.period}<br>
+                        ${bill.paymentMethod ? `Metode: ${bill.paymentMethod}` : ''}
+                    </div>
+                    <div style="border-top: 1px dashed #000; padding-top: 5px;">
+                        <strong>Total: ${formatCurrency(bill.amount)}</strong><br>
+                        Status: LUNAS
+                    </div>
+                `;
+                
+                document.getElementById('receiptContent').innerHTML = receiptContent;
+                window.print();
+            }
+        }
+
+        function sendWhatsApp(phone, name, billId = null) {
+            let message = `Halo ${name}`;
+            
+            if (billId) {
+                const bill = bills.find(b => b.id === billId);
+                if (bill) {
+                    if (bill.status === 'Belum Bayar') {
+                        message += `, tagihan internet Anda untuk periode ${bill.period} sebesar ${formatCurrency(bill.amount)} belum terbayar. Mohon segera lakukan pembayaran.`;
+                    } else {
+                        message += `, terima kasih telah melakukan pembayaran tagihan periode ${bill.period} sebesar ${formatCurrency(bill.amount)}.`;
+                    }
+                }
+            } else {
+                message += `, terima kasih telah menjadi pelanggan Bumdes CMMS Cikahuripan.`;
+            }
+            
+            const whatsappUrl = `https://wa.me/62${phone.replace(/^0/, '')}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        function renderComplaints() {
+            const tbody = document.getElementById('complaintsList');
+            tbody.innerHTML = '';
+            
+            // No sample complaints for 2025 - start fresh
+            const sampleComplaints = [];
+            
+            if (sampleComplaints.length > 0) {
+                sampleComplaints.forEach(complaint => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-4 py-3 font-medium">${complaint.id}</td>
+                        <td class="px-4 py-3">${complaint.customerName}</td>
+                        <td class="px-4 py-3">${complaint.type}</td>
+                        <td class="px-4 py-3">${new Date(complaint.date).toLocaleDateString('id-ID')}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 text-xs rounded-full ${complaint.status === 'Selesai' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                ${complaint.status}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <button onclick="updateComplaintStatus('${complaint.id}')" class="text-blue-600 hover:text-blue-800 text-xs">
+                                ${complaint.status === 'Selesai' ? 'Buka Kembali' : 'Selesaikan'}
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } else {
+                // Show empty state
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="6" class="px-4 py-8 text-center text-gray-500">
+                        Belum ada pengaduan. Pelanggan dapat mengirim pengaduan melalui WhatsApp ke 082125415593
+                    </td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
+
+        function updateComplaintStatus(complaintId) {
+            alert('Status pengaduan berhasil diupdate!');
+            renderComplaints();
+        }
+
+        function updateDashboard() {
+            const activeCustomers = customers.filter(c => c.status === 'Aktif').length;
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            const monthlyRevenue = payments
+                .filter(p => {
+                    const paidDate = new Date(p.paidAt);
+                    return paidDate.getMonth() === currentMonth && paidDate.getFullYear() === currentYear;
+                })
+                .reduce((sum, p) => sum + p.amount, 0);
+            
+            const pendingBills = bills.filter(b => b.status === 'Belum Bayar').length;
+            
+            document.getElementById('totalCustomers').textContent = activeCustomers;
+            document.getElementById('monthlyRevenue').textContent = formatCurrency(monthlyRevenue);
+            document.getElementById('pendingBills').textContent = pendingBills;
+            document.getElementById('activeComplaints').textContent = '2'; // Sample data
+        }
+
+        function initCharts() {
+            // Revenue Chart
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                    datasets: [{
+                        label: 'Pendapatan (Juta Rp)',
+                        data: [0, 0, 0, 0, 0, 0],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateReportsCharts() {
+            // Monthly Revenue Chart
+            const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+            new Chart(monthlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                    datasets: [{
+                        label: 'Pendapatan (Juta Rp)',
+                        data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Payment Status Chart
+            const paymentCtx = document.getElementById('paymentChart').getContext('2d');
+            new Chart(paymentCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Lunas', 'Belum Bayar', 'Terlambat'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(251, 191, 36, 0.8)',
+                            'rgba(239, 68, 68, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+
+            // Update summary
+            document.getElementById('yearlyRevenue').textContent = 'Rp 0';
+            document.getElementById('avgMonthlyRevenue').textContent = 'Rp 0';
+            document.getElementById('paymentRate').textContent = '0%';
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function addSampleData() {
+            const sampleCustomers = [
+                {
+                    id: 'CUST0001',
+                    name: 'Budi Santoso',
+                    phone: '081234567890',
+                    email: 'budi@email.com',
+                    address: 'Jl. Merdeka No. 123',
+                    package: 'Standard - 20 Mbps - Rp 200000',
+                    startDate: '2024-01-01',
+                    status: 'Aktif',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 'CUST0002',
+                    name: 'Siti Aminah',
+                    phone: '081234567891',
+                    email: 'siti@email.com',
+                    address: 'Jl. Sudirman No. 456',
+                    package: 'Basic - 10 Mbps - Rp 150000',
+                    startDate: '2024-01-01',
+                    status: 'Aktif',
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            
+            customers = sampleCustomers;
+            localStorage.setItem('customers', JSON.stringify(customers));
+            renderCustomers();
+            updateDashboard();
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98bdff0e31fc4ad6',t:'MTc2MDAxNDE0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
